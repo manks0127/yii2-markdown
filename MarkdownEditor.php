@@ -61,16 +61,21 @@ class MarkdownEditor extends InputWidget
      * Prepare options to widget
      * @return string
      */
-    private function prepareOptionsForSimpleMDE()
+    protected function prepareOptionsForSimpleMDE()
     {
         $this->options['element'] = "document.getElementById('{$this->options['id']}')";
         unset($this->options['id']);
         foreach ($this->options as $key => $value) {
-            if (strpos($value, 'document') !== false || strpos($value, '$') !== false) {
-                $this->options[$key] = $key . ': ' . $value;
-            } else {
-                $this->options[$key] = $key . ': "' . $value . '"';
+            if (is_string($value)) {
+                if (strpos($value, 'document') !== false || strpos($value, '$') !== false) {
+                    $this->options[$key] = $key . ': ' . $value;
+                } else {
+                    $this->options[$key] = $key . ': "' . $value . '"';
+                }
+            } elseif (is_array($value)) {
+                $this->options[$key] = $key . ': ' . json_encode($value);
             }
+            
         }
 
         return implode(', ', $this->options);
